@@ -18,7 +18,9 @@ public class ObjectUtil {
 
 	/**
 	 * Check all element is null
-	 * @param lst List<Object>
+	 * 
+	 * @param lst
+	 *            List<Object>
 	 * @return boolean
 	 * @author DaiNV
 	 * @since 20180529
@@ -27,31 +29,33 @@ public class ObjectUtil {
 		if (lst == null) {
 			return true;
 		}
-		for (Object obj: lst) {
+		for (Object obj : lst) {
 			if (obj != null) {
 				return false;
 			}
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Get all fields of object
-	 * @param obj Object
+	 * 
+	 * @param obj
+	 *            Object
 	 * @return List<Field
 	 * @author DaiNV
 	 * @since 20180528
 	 */
 	public static List<Field> getFields(Object obj) {
-        List<Field> fields = new ArrayList<>();
-        Class<?> clazz = obj.getClass();
-        while (clazz != Object.class) {
-            fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
-            clazz = clazz.getSuperclass();
-        }
-        return fields;
-    }
-	
+		List<Field> fields = new ArrayList<>();
+		Class<?> clazz = obj.getClass();
+		while (clazz != Object.class) {
+			fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
+			clazz = clazz.getSuperclass();
+		}
+		return fields;
+	}
+
 	/**
 	 * Copy all properties of object.
 	 * 
@@ -99,42 +103,43 @@ public class ObjectUtil {
 		}
 	}
 
-//	public static void getAllProperties(BaseExcelModel obj) throws Exception {
-//		if (obj == null) {
-//			return;
-//		}
-//		Map<String, Field> mapFields = new HashMap<>();
-//		for (Field f : getFields(obj)) {
-//			boolean isFinal = false;
-//			isFinal = isFinal || java.lang.reflect.Modifier.isFinal(f.getModifiers());
-//			mapFields.put(f.getName(), f);
-//			if (isFinal) {
-//				continue;
-//			}
-//			// f.set("");
-//			f.setAccessible(true);
-//		}
-//		/*obj.set("name", "Dai1");
-//		obj.set("num", 2);
-//		obj.set("mapColumnNameToIndex", new HashMap<String, Integer>() {
-//			{
-//				put("key1", 5);
-//				put("key2", 10);
-//			}
-//		});*/
-//		//System.out.println(obj);
-//	}
+	// public static void getAllProperties(BaseExcelModel obj) throws Exception {
+	// if (obj == null) {
+	// return;
+	// }
+	// Map<String, Field> mapFields = new HashMap<>();
+	// for (Field f : getFields(obj)) {
+	// boolean isFinal = false;
+	// isFinal = isFinal || java.lang.reflect.Modifier.isFinal(f.getModifiers());
+	// mapFields.put(f.getName(), f);
+	// if (isFinal) {
+	// continue;
+	// }
+	// // f.set("");
+	// f.setAccessible(true);
+	// }
+	// /*obj.set("name", "Dai1");
+	// obj.set("num", 2);
+	// obj.set("mapColumnNameToIndex", new HashMap<String, Integer>() {
+	// {
+	// put("key1", 5);
+	// put("key2", 10);
+	// }
+	// });*/
+	// //System.out.println(obj);
+	// }
 
 	public static void main(String[] args) throws Exception {
-//		long start, end;
-//		start = System.nanoTime();
-//		ExcelModel objTemplate = new ExcelModel();
-//		for (int i=0; i<1000; i++) {
-//			ExcelModel tmp = new ExcelModel(objTemplate.getMapFields());
-//			tmp.setExcelValue(new Object[] {"VDN_" + i, "dainv_@gmail.com_" + i, "dainv_" + i, "Hpt123456"});
-//			getAllProperties(tmp);	
-//		}
-//		end = System.nanoTime();
-//		System.out.println(end - start);
+		// long start, end;
+		// start = System.nanoTime();
+		// ExcelModel objTemplate = new ExcelModel();
+		// for (int i=0; i<1000; i++) {
+		// ExcelModel tmp = new ExcelModel(objTemplate.getMapFields());
+		// tmp.setExcelValue(new Object[] {"VDN_" + i, "dainv_@gmail.com_" + i, "dainv_"
+		// + i, "Hpt123456"});
+		// getAllProperties(tmp);
+		// }
+		// end = System.nanoTime();
+		// System.out.println(end - start);
 	}
 }

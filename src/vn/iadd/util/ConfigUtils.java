@@ -14,18 +14,19 @@ public class ConfigUtils {
 	 * Config name
 	 */
 	private static final String CONFIG_NAME = "/ExcelReader_20180529.properties";
-	
+
 	/**
 	 * Properties
 	 */
 	private static Properties props;
-	
+
 	static {
 		loadProp();
 	}
-	
+
 	/**
 	 * Load all properties
+	 * 
 	 * @author DaiNV
 	 * @since 20180411
 	 */
@@ -37,10 +38,12 @@ public class ConfigUtils {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Get config using key
-	 * @param key String
+	 * 
+	 * @param key
+	 *            String
 	 * @return String
 	 * @author DaiNV
 	 * @since 20180411
