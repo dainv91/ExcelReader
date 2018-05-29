@@ -107,10 +107,16 @@ public class ExcelReaderImpl implements IExcelReader {
 					}
 					cols.add(cell.getNumericCellValue());
 					continue;
+				} else if (cType == CellType.BOOLEAN) {
+					cols.add(cell.getBooleanCellValue());
+					continue;
 				} else if (cType == CellType.FORMULA) {
 					CellValue cv = evaluator.evaluate(cell);
 					if (cv.getCellTypeEnum() == CellType.STRING) {
 						cols.add(cv.getStringValue());
+						continue;
+					} else if (cv.getCellTypeEnum() == CellType.BOOLEAN) {
+						cols.add(cv.getBooleanValue());
 						continue;
 					} else if (cv.getCellTypeEnum() == CellType.NUMERIC) {
 //						if (DateUtil.isCellDateFormatted(cell)) {
