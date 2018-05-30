@@ -5,8 +5,18 @@ import java.util.function.Consumer;
 
 public interface IExcelReader extends AutoCloseable {
 	
+	/**
+	 * Read content of excel file to list
+	 * @param file String
+	 * @return List<IExcelModel>
+	 */
 	List<IExcelModel> read(String file);
 	
+	/**
+	 * Read content of excel asynchronous. Call onDone consumer when done.
+	 * @param file String
+	 * @param onDone Consumer<List<IExcelModel>>
+	 */
 	void readAsync(String file, Consumer<List<IExcelModel>> onDone);
 }
  

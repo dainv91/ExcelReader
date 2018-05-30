@@ -5,11 +5,27 @@ import java.util.Map;
 
 public interface IExcelModel {
 	
+	/**
+	 * Copy fields from another object instead of reflection.
+	 * @param mapFields Map<String, Field>
+	 * @return IExcelModel
+	 */
 	IExcelModel createFromFields(Map<String, Field> mapFields);
 	
+	/**
+	 * Get map name - field
+	 * @return Map<String, Field>
+	 */
 	Map<String, Field> getMapFields();
 	
+	/**
+	 * Map column name with index
+	 */
 	void mapColumnWithIndex();
 	
+	/**
+	 * Set value from excel
+	 * @param arr Object[]
+	 */
 	void setExcelValue(Object[] arr);
 }
