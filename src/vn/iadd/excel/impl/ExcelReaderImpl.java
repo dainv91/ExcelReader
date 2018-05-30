@@ -31,10 +31,19 @@ public class ExcelReaderImpl implements IExcelReader {
 	
 	private static final int C_ROW_HEADER = 2;
 	
+	/**
+	 * Row of header
+	 */
 	private int rowHeader;
 	
+	/**
+	 * Object template for list field
+	 */
 	private IExcelModel modelTemplate;
 	
+	/**
+	 * Executor for asynchronous
+	 */
 	ExecutorService executor = Executors.newCachedThreadPool();
 	
 	/**

@@ -8,6 +8,12 @@ import java.util.Map;
 
 import vn.iadd.util.ObjectUtil;
 
+/**
+ * BaseExcelModel
+ * 
+ * @author DaiNV
+ * @since 20180529
+ */
 public abstract class BaseExcelModel implements IExcelModel, Serializable {
 
 	/**
@@ -15,7 +21,14 @@ public abstract class BaseExcelModel implements IExcelModel, Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Map column name - index
+	 */
 	private Map<String, Integer> mapColumnNameToIndex = new HashMap<>();
+	
+	/**
+	 * Map index - column name
+	 */
 	private Map<Integer, String> mapIndexToColumnName = new HashMap<>();
 
 	/**
@@ -23,11 +36,18 @@ public abstract class BaseExcelModel implements IExcelModel, Serializable {
 	 */
 	private final Map<String, Field> mapFields = new HashMap<>();
 
+	/**
+	 * Default constructor
+	 */
 	public BaseExcelModel() {
 		initFields();
 		mapColumnWithIndex();
 	}
 
+	/**
+	 * Constructor with parameter
+	 * @param fields Map<String, Field>
+	 */
 	public BaseExcelModel(Map<String, Field> fields) {
 		if (fields != null && !fields.isEmpty()) {
 			//mapFields.clear();
@@ -40,6 +60,11 @@ public abstract class BaseExcelModel implements IExcelModel, Serializable {
 		return mapColumnNameToIndex.containsKey(colName);
 	}
 
+	/**
+	 * Add column name with index in excel file
+	 * @param colName String
+	 * @param index int
+	 */
 	public void addColumnIndex(String colName, int index) {
 		Integer i = Integer.valueOf(index);
 		mapColumnNameToIndex.put(colName, i);
@@ -50,10 +75,17 @@ public abstract class BaseExcelModel implements IExcelModel, Serializable {
 		return mapColumnNameToIndex.get(colName).intValue();
 	}
 
+	/**
+	 * Get map fields using reflection.
+	 */
 	private void initFields() {
 		initFields(ObjectUtil.getFields(this));
 	}
 	
+	/**
+	 * Get map fields using another object template.
+	 * @param fields
+	 */
 	private void initFields(List<Field> fields) {
 		if (fields == null || fields.isEmpty()) {
 			return;
