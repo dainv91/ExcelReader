@@ -21,19 +21,20 @@ public class ConfigUtils {
 	private static Properties props;
 
 	static {
-		loadProp();
+		loadProp(CONFIG_NAME);
 	}
 
 	/**
 	 * Load all properties
 	 * 
+	 * @param String configFile
 	 * @author DaiNV
 	 * @since 20180411
 	 */
-	private static void loadProp() {
+	public static void loadProp(String configFile) {
 		props = new Properties();
 		try {
-			props.load(ConfigUtils.class.getResourceAsStream(CONFIG_NAME));
+			props.load(ConfigUtils.class.getResourceAsStream(configFile));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
