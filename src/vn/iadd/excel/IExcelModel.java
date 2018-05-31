@@ -3,6 +3,11 @@ package vn.iadd.excel;
 import java.lang.reflect.Field;
 import java.util.Map;
 
+/**
+ * IExcelModel
+ * @author DaiNV
+ * @since 20180529
+ */
 public interface IExcelModel {
 	
 	/**

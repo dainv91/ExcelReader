@@ -3,6 +3,11 @@ package vn.iadd.excel;
 import java.util.List;
 import java.util.function.Consumer;
 
+/**
+ * IExcelReader
+ * @author DaiNV
+ * @since 20180529
+ */
 public interface IExcelReader extends AutoCloseable {
 	
 	/**

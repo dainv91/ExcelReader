@@ -4,6 +4,12 @@ import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.Map;
 
+/**
+ * ExcelModel
+ * 
+ * @author DaiNV
+ * @since 20180529
+ */
 public class ExcelModel extends BaseExcelModel {
 
 	/**
@@ -15,10 +21,17 @@ public class ExcelModel extends BaseExcelModel {
 	private Double actKey;
 	private Date createdDate;
 
+	/**
+	 * Default constructor
+	 */
 	public ExcelModel() {
 		
 	}
 	
+	/**
+	 * Constructor
+	 * @param fields Map<String, Field>
+	 */
 	public ExcelModel(Map<String, Field> fields) {
 		super(fields);
 	}
