@@ -35,6 +35,8 @@ import vn.iadd.util.ObjectUtil;
 public class ExcelReaderImpl implements IExcelReader {
 
 	private static final int C_ROW_HEADER = 2;
+	
+	private static final String C_DEFAULT_SHEET_TO_READ = "0";
 
 	/**
 	 * Row of header
@@ -49,10 +51,26 @@ public class ExcelReaderImpl implements IExcelReader {
 	/**
 	 * Executor for asynchronous
 	 */
-	ExecutorService executor = Executors.newCachedThreadPool();
+	private ExecutorService executor = Executors.newCachedThreadPool();
 
-	Map<String, Integer> mapHeaderNameWithPos;
-	Map<Integer, String> mapHeaderPosWithName;
+	/**
+	 * Map header - pos
+	 */
+	private Map<String, Integer> mapHeaderNameWithPos;
+	
+	/**
+	 * Map pos - header
+	 */
+	private Map<Integer, String> mapHeaderPosWithName;
+	
+	/**
+	 * Sheet index / name. Default is 0.
+	 */
+	private String sheetIndexOrNameToRead;
+	
+	void log(String msg) {
+		Logger.log(this.getClass(), msg);
+	}
 	
 	/**
 	 * Constructor with object template
@@ -70,6 +88,17 @@ public class ExcelReaderImpl implements IExcelReader {
 	 * @param objTemplate
 	 */
 	public ExcelReaderImpl(int rowHeader, IExcelModel objTemplate) {
+		this(C_DEFAULT_SHEET_TO_READ, rowHeader, objTemplate);
+	}
+	
+	/**
+	 * Constructor
+	 * @param sheetToRead String
+	 * @param rowHeader int
+	 * @param objTemplate IExcelModel
+	 */
+	public ExcelReaderImpl(String sheetToRead, int rowHeader, IExcelModel objTemplate) {
+		this.sheetIndexOrNameToRead = sheetToRead;
 		this.rowHeader = rowHeader;
 		this.modelTemplate = objTemplate;
 		
@@ -77,8 +106,12 @@ public class ExcelReaderImpl implements IExcelReader {
 		this.mapHeaderPosWithName = new HashMap<>();
 	}
 
-	void log(String msg) {
-		Logger.log(this.getClass(), msg);
+	public String getSheetIndexOrNameToRead() {
+		return sheetIndexOrNameToRead;
+	}
+
+	public void setSheetIndexOrNameToRead(String sheetIndexOrNameToRead) {
+		this.sheetIndexOrNameToRead = sheetIndexOrNameToRead;
 	}
 
 	/**
@@ -100,7 +133,7 @@ public class ExcelReaderImpl implements IExcelReader {
 			throws EncryptedDocumentException, InvalidFormatException, IOException {
 
 		Workbook wb = WorkbookFactory.create(new File(file), null, true);
-		Sheet sheet = wb.getSheetAt(0);
+		Sheet sheet = getSheetToRead(wb, getSheetIndexOrNameToRead());
 		Iterator<Row> rowIterator = sheet.rowIterator();
 		FormulaEvaluator evaluator = wb.getCreationHelper().createFormulaEvaluator();
 		
@@ -175,6 +208,28 @@ public class ExcelReaderImpl implements IExcelReader {
 		executor.submit(task);
 	}
 
+	private Sheet getSheetToRead(Workbook wb, String sheetIndexOrName) {
+		boolean isNumeric = true;
+		final int DEFAULT_SHEET = 0;
+		int index = DEFAULT_SHEET;
+		if (sheetIndexOrName != null && !sheetIndexOrName.isEmpty()) {
+			try {
+				index = Integer.parseInt(sheetIndexOrName);
+			} catch (Exception ex) {
+				isNumeric = false;
+			}
+		}
+		if (!isNumeric) {
+			index = wb.getSheetIndex(sheetIndexOrName);
+			boolean checkNameIsValid = index == -1;
+			if (!checkNameIsValid) {
+				throw new RuntimeException("Invalid sheet name");
+			}
+		}
+		wb.getSheetAt(index);
+		return null;
+	}
+	
 	/**
 	 * Get value of cell
 	 * @param cell Cell
