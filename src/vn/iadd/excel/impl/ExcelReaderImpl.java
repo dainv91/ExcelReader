@@ -96,12 +96,16 @@ public class ExcelReaderImpl implements IExcelReader {
 		Sheet sheet = wb.getSheetAt(0);
 		Iterator<Row> rowIterator = sheet.rowIterator();
 		FormulaEvaluator evaluator = wb.getCreationHelper().createFormulaEvaluator();
-
+		
 		int rPos = 0;
 		while (rowIterator.hasNext()) {
 			rPos++;
-			if (rPos <= rowHeader) { // Skip header
+			if (rPos < rowHeader) { // Skip header
 				rowIterator.next();
+				continue;
+			}
+			if (rPos == rowHeader) {
+				readHeaderRowData(rowIterator.next());
 				continue;
 			}
 
@@ -111,40 +115,8 @@ public class ExcelReaderImpl implements IExcelReader {
 			while (cellIterator.hasNext()) {
 				// cPos++;
 				Cell cell = cellIterator.next();
-				CellType cType = cell.getCellTypeEnum();
-				if (cType == CellType.STRING) {
-					colEvent.accept(colObj, cell.getStringCellValue());
-					continue;
-				} else if (cType == CellType.NUMERIC) {
-					if (DateUtil.isCellDateFormatted(cell)) {
-						// Date
-						colEvent.accept(colObj, cell.getDateCellValue());
-						continue;
-					}
-					colEvent.accept(colObj, cell.getNumericCellValue());
-					continue;
-				} else if (cType == CellType.BOOLEAN) {
-					colEvent.accept(colObj, cell.getBooleanCellValue());
-					continue;
-				} else if (cType == CellType.FORMULA) {
-					CellValue cv = evaluator.evaluate(cell);
-					if (cv.getCellTypeEnum() == CellType.STRING) {
-						colEvent.accept(colObj, cv.getStringValue());
-						continue;
-					} else if (cv.getCellTypeEnum() == CellType.BOOLEAN) {
-						colEvent.accept(colObj, cv.getBooleanValue());
-						continue;
-					} else if (cv.getCellTypeEnum() == CellType.NUMERIC) {
-						// if (DateUtil.isCellDateFormatted(cell)) {
-						// }
-						colEvent.accept(colObj, cv.getNumberValue());
-						continue;
-					} else {
-						colEvent.accept(colObj, null);
-					}
-				} else {
-					colEvent.accept(colObj, null);
-				}
+				Object value = getCellValue(cell, evaluator);
+				colEvent.accept(colObj, value);
 			}
 			if (checkColsNullPre.test(colObj)) {
 				continue;
@@ -194,6 +166,73 @@ public class ExcelReaderImpl implements IExcelReader {
 		executor.submit(task);
 	}
 
+	/**
+	 * Get value of cell
+	 * @param cell Cell
+	 * @param evaluator FormulaEvaluator
+	 * @return Object
+	 */
+	private Object getCellValue(Cell cell, FormulaEvaluator evaluator) {
+		Object value = null;
+		if (cell == null) {
+			return value;
+		}
+		CellType cType = cell.getCellTypeEnum();
+		if (cType == CellType.STRING) {
+			value = cell.getStringCellValue();
+		} else if (cType == CellType.NUMERIC) {
+			if (DateUtil.isCellDateFormatted(cell)) {
+				// Date
+				value = cell.getDateCellValue();
+			}
+			value = cell.getNumericCellValue();
+		} else if (cType == CellType.BOOLEAN) {
+			value = cell.getBooleanCellValue();
+		} else if (cType == CellType.FORMULA) {
+			CellValue cv = evaluator.evaluate(cell);
+			if (cv.getCellTypeEnum() == CellType.STRING) {
+				value = cv.getStringValue();
+			} else if (cv.getCellTypeEnum() == CellType.BOOLEAN) {
+				value = cv.getBooleanValue();
+			} else if (cv.getCellTypeEnum() == CellType.NUMERIC) {
+				// if (DateUtil.isCellDateFormatted(cell)) {
+				// }
+				value = cv.getNumberValue();
+			} else {
+				value = null;
+			}
+		}
+		return value;
+	}
+	
+	private void readHeaderRowData(Row header) {
+		if (header == null) {
+			return;
+		}
+		Iterator<Cell> it = header.cellIterator();
+		while (it.hasNext()) {
+			String key = null;
+			
+			Cell cell = it.next();
+			CellType cType = cell.getCellTypeEnum();
+			if (cType == CellType.STRING) {
+				key = cell.getStringCellValue();
+				continue;
+			} else if (cType == CellType.NUMERIC) {
+				if (DateUtil.isCellDateFormatted(cell)) {
+					// Date
+					key = cell.getDateCellValue().toString();
+					continue;
+				}
+				key = Double.toString(cell.getNumericCellValue());
+				continue;
+			} else if (cType == CellType.BOOLEAN) {
+				key = Boolean.toString(cell.getBooleanCellValue());
+				continue;
+			}
+		}
+	}
+	
 	/**
 	 * Read all rows from excel file to list
 	 * 
