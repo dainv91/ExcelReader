@@ -14,6 +14,7 @@ For running this, you will need
 ## How to
 
 1. Create class extends **BaseExcelModel** (for example class **ExcelModel**). It should implements method **mapColumnWithIndex**.
+If you only need read each row to Map<String, Object> (readToMap, readToMapAsync), skip step 1, and pass **null** at 2nd parameter at step 2.
 ```java
 @Override
 public void mapColumnWithIndex() {
@@ -44,6 +45,8 @@ IExcelReader reader = new ExcelReaderImpl(rowHeader, new ExcelModel());
 ```java
 List<IExcelModel> read(String file);	
 void readAsync(String file, Consumer<List<IExcelModel>> onDone);
+List<Map<String, Object>> readToMap(String file);
+void readToMapAsync(String file, Consumer<List<Map<String, Object>>> onDone);
 ```
 
 *You can check sample in class* **MainTestExcel**
