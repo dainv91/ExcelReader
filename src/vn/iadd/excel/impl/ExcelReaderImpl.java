@@ -2,6 +2,7 @@ package vn.iadd.excel.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -50,6 +51,9 @@ public class ExcelReaderImpl implements IExcelReader {
 	 */
 	ExecutorService executor = Executors.newCachedThreadPool();
 
+	Map<String, Integer> mapHeaderNameWithPos;
+	Map<Integer, String> mapHeaderPosWithName;
+	
 	/**
 	 * Constructor with object template
 	 * 
@@ -68,6 +72,9 @@ public class ExcelReaderImpl implements IExcelReader {
 	public ExcelReaderImpl(int rowHeader, IExcelModel objTemplate) {
 		this.rowHeader = rowHeader;
 		this.modelTemplate = objTemplate;
+		
+		this.mapHeaderNameWithPos = new HashMap<>();
+		this.mapHeaderPosWithName = new HashMap<>();
 	}
 
 	void log(String msg) {
@@ -83,12 +90,12 @@ public class ExcelReaderImpl implements IExcelReader {
 	 * @param colObj
 	 * @param colEvent
 	 * @param rowObj
-	 * @param rowEvent
+	 * @param rowEvent Column name - value
 	 * @throws EncryptedDocumentException
 	 * @throws InvalidFormatException
 	 * @throws IOException
 	 */
-	public <C1, R1> void readFromExcel(String file, C1 colObj, BiConsumer<C1, Object> colEvent,
+	public <C1, R1> void readFromExcel(String file, C1 colObj, BiConsumer<C1, Map.Entry<String, Object>> colEvent,
 			Predicate<C1> checkColsNullPre, R1 rowObj, BiConsumer<R1, C1> rowEvent)
 			throws EncryptedDocumentException, InvalidFormatException, IOException {
 
@@ -109,14 +116,16 @@ public class ExcelReaderImpl implements IExcelReader {
 				continue;
 			}
 
-			// int cPos = 0;
+			int cPos = 0;
 			Row row = rowIterator.next();
 			Iterator<Cell> cellIterator = row.cellIterator();
 			while (cellIterator.hasNext()) {
-				// cPos++;
+				cPos++;
 				Cell cell = cellIterator.next();
 				Object value = getCellValue(cell, evaluator);
-				colEvent.accept(colObj, value);
+				String key = mapHeaderPosWithName.get(cPos); 
+				Map.Entry<String, Object> entry = new AbstractMap.SimpleEntry<>(key, value);
+				colEvent.accept(colObj, entry);
 			}
 			if (checkColsNullPre.test(colObj)) {
 				continue;
@@ -184,8 +193,9 @@ public class ExcelReaderImpl implements IExcelReader {
 			if (DateUtil.isCellDateFormatted(cell)) {
 				// Date
 				value = cell.getDateCellValue();
+			} else {
+				value = cell.getNumericCellValue();	
 			}
-			value = cell.getNumericCellValue();
 		} else if (cType == CellType.BOOLEAN) {
 			value = cell.getBooleanCellValue();
 		} else if (cType == CellType.FORMULA) {
@@ -209,27 +219,20 @@ public class ExcelReaderImpl implements IExcelReader {
 		if (header == null) {
 			return;
 		}
+		FormulaEvaluator evaluator = header.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();
 		Iterator<Cell> it = header.cellIterator();
+		int pos = 0;
 		while (it.hasNext()) {
+			pos++;
 			String key = null;
-			
 			Cell cell = it.next();
-			CellType cType = cell.getCellTypeEnum();
-			if (cType == CellType.STRING) {
-				key = cell.getStringCellValue();
-				continue;
-			} else if (cType == CellType.NUMERIC) {
-				if (DateUtil.isCellDateFormatted(cell)) {
-					// Date
-					key = cell.getDateCellValue().toString();
-					continue;
-				}
-				key = Double.toString(cell.getNumericCellValue());
-				continue;
-			} else if (cType == CellType.BOOLEAN) {
-				key = Boolean.toString(cell.getBooleanCellValue());
+			Object value = getCellValue(cell, evaluator);
+			if (value == null) {
 				continue;
 			}
+			key = value.toString();
+			mapHeaderNameWithPos.put(key, pos);
+			mapHeaderPosWithName.put(pos, key);
 		}
 	}
 	
@@ -249,8 +252,9 @@ public class ExcelReaderImpl implements IExcelReader {
 		List<List<Object>> rowObj = null;
 		try {
 			List<Object> colObj = new ArrayList<>();
-			BiConsumer<List<Object>, Object> colEvent = (col, value) -> {
-				col.add(value);
+			BiConsumer<List<Object>, Map.Entry<String, Object>> colEvent = (col, entry) -> {
+				//entry.getKey();
+				col.add(entry.getValue());
 			};
 			Predicate<List<Object>> checkColsNullPre = (cols) -> {
 				if (cols == null || ObjectUtil.allIsNull(cols)) {
@@ -296,8 +300,8 @@ public class ExcelReaderImpl implements IExcelReader {
 		List<Map<String, Object>> rowObj = null;
 		try {
 			Map<String, Object> colObj = new HashMap<>();
-			BiConsumer<Map<String, Object>, Object> colEvent = (col, value) -> {
-				col.put(value.toString(), value.toString());
+			BiConsumer<Map<String, Object>, Map.Entry<String, Object>> colEvent = (col, entry) -> {
+				col.put(entry.getKey(), entry.getValue());
 			};
 			Predicate<Map<String, Object>> checkColsNullPre = (cols) -> {
 				if (cols == null || ObjectUtil.allIsNull(cols.values())) {
