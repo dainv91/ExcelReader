@@ -1,6 +1,7 @@
 package vn.iadd.excel;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -18,10 +19,24 @@ public interface IExcelReader extends AutoCloseable {
 	List<IExcelModel> read(String file);
 	
 	/**
-	 * Read content of excel asynchronous. Call onDone consumer when done.
+	 * Read content of excel asynchronous. Call onDone consumer when finish.
 	 * @param file String
 	 * @param onDone Consumer<List<IExcelModel>>
 	 */
 	void readAsync(String file, Consumer<List<IExcelModel>> onDone);
+	
+	/**
+	 * Read content of excel file to list of map object
+	 * @param file String
+	 * @return List<Map<String, Object>>
+	 */
+	List<Map<String, Object>> readToMap(String file);
+	
+	/**
+	 * Read content of excel file to list of map object asynchronous. Call onDone consumer when finish.
+	 * @param file String
+	 * @param onDone Consumer<List<Map<String, Object>>>
+	 */
+	void readToMapAsync(String file, Consumer<List<Map<String, Object>>> onDone);
 }
  

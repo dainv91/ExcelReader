@@ -6,6 +6,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -25,11 +26,11 @@ public class ObjectUtil {
 	 * @author DaiNV
 	 * @since 20180529
 	 */
-	public static boolean allIsNull(List<Object> lst) {
+	public static <T>boolean allIsNull(Collection<T> lst) {
 		if (lst == null) {
 			return true;
 		}
-		for (Object obj : lst) {
+		for (T obj : lst) {
 			if (obj != null) {
 				return false;
 			}

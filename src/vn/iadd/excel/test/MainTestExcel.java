@@ -1,6 +1,7 @@
 package vn.iadd.excel.test;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
@@ -30,12 +31,13 @@ public class MainTestExcel {
 			}
 		}
 		
-		long start, end;
-		start = System.nanoTime();
-		testReadSync(rowHeader);
-		end = System.nanoTime();
-		log("Start -> End: " + (end - start));
-		testReadAsync(rowHeader);
+		//long start, end;
+		//start = System.nanoTime();
+		//testReadSync(rowHeader);
+		//end = System.nanoTime();
+		//log("Start -> End: " + (end - start));
+		//testReadAsync(rowHeader);
+		testReadToMap(rowHeader);
 	}
 	
 	static void testReadSync(int rowHeader) {
@@ -69,6 +71,29 @@ public class MainTestExcel {
 			log("Start -> End: " + (end - start));
 		};
 		reader.readAsync(file, onDone);
+		log("Waiting...");
+	}
+	
+	static void testReadToMap(int rowHeader) throws InterruptedException, ExecutionException {
+		final long start;
+		start = System.nanoTime();
+		IExcelReader reader = new ExcelReaderImpl(rowHeader, null);
+		
+		Consumer<List<Map<String, Object>>> onDone = lstObject -> {
+			if (lstObject != null) {
+				log("Size: " + lstObject.size());
+			}
+			log("I'm done here: ");
+			try {
+				reader.close();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			long end = System.nanoTime();
+			log("Start -> End: " + (end - start));
+		};
+		reader.readToMapAsync(file, onDone);
 		log("Waiting...");
 	}
 }

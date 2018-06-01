@@ -22,4 +22,8 @@ public class Logger {
 	public static void log(Class<?> clazz, String msg) {
 		System.out.println(clazz.getName() + ", -->" + Thread.currentThread().getName() + "<--->" + msg);
 	}
+	
+	public static void main(String[] args) {
+		log("test");
+	}
 }
