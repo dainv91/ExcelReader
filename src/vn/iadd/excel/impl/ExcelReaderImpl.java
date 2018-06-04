@@ -326,7 +326,9 @@ public class ExcelReaderImpl implements IExcelReader {
 			};
 			readFromExcel(file, colObj, colEvent, checkColsNullPre, rowObj, rowEvent);
 		} catch (EncryptedDocumentException | InvalidFormatException | IOException e) {
-			e.printStackTrace();
+			log(e.getMessage());
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 		if (rowObj == null || rowObj.isEmpty()) {
 			return;
@@ -373,7 +375,9 @@ public class ExcelReaderImpl implements IExcelReader {
 			};
 			readFromExcel(file, colObj, colEvent, checkColsNullPre, rowObj, rowEvent);
 		} catch (EncryptedDocumentException | InvalidFormatException | IOException e) {
-			e.printStackTrace();
+			log(e.getMessage());
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 		if (rowObj == null || rowObj.isEmpty()) {
 			return;
