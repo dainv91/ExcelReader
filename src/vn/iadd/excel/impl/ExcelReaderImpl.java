@@ -102,8 +102,7 @@ public class ExcelReaderImpl implements IExcelReader {
 		this.rowHeader = rowHeader;
 		this.modelTemplate = objTemplate;
 		
-		this.mapHeaderNameWithPos = new HashMap<>();
-		this.mapHeaderPosWithName = new HashMap<>();
+		init0();
 	}
 
 	public String getSheetIndexOrNameToRead() {
@@ -112,6 +111,7 @@ public class ExcelReaderImpl implements IExcelReader {
 
 	public void setSheetIndexOrNameToRead(String sheetIndexOrNameToRead) {
 		this.sheetIndexOrNameToRead = sheetIndexOrNameToRead;
+		init0();
 	}
 
 	/**
@@ -208,6 +208,32 @@ public class ExcelReaderImpl implements IExcelReader {
 		executor.submit(task);
 	}
 
+	/**
+	 * Init or clear map
+	 * @param map
+	 */
+	private <K,V>void initOrClear(Map<K, V> map) {
+		if (map == null) {
+			map = new HashMap<>();
+			return;
+		}
+		map.clear();
+	}
+	
+	/**
+	 * Init variables
+	 */
+	private void init0() {
+		initOrClear(mapHeaderNameWithPos);
+		initOrClear(mapHeaderPosWithName);
+	}
+	
+	/**
+	 * Get sheet to read
+	 * @param wb Workbook
+	 * @param sheetIndexOrName String
+	 * @return Sheet
+	 */
 	private Sheet getSheetToRead(Workbook wb, String sheetIndexOrName) {
 		boolean isNumeric = true;
 		final int DEFAULT_SHEET = 0;
@@ -269,6 +295,10 @@ public class ExcelReaderImpl implements IExcelReader {
 		return value;
 	}
 	
+	/**
+	 * Read header row data
+	 * @param header Row
+	 */
 	private void readHeaderRowData(Row header) {
 		if (header == null) {
 			return;
