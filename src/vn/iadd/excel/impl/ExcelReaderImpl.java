@@ -212,20 +212,21 @@ public class ExcelReaderImpl implements IExcelReader {
 	 * Init or clear map
 	 * @param map
 	 */
-	private <K,V>void initOrClear(Map<K, V> map) {
+	private <K,V> Map<K, V> initOrClear(Map<K, V> map) {
 		if (map == null) {
 			map = new HashMap<>();
-			return;
+			return map;
 		}
 		map.clear();
+		return map;
 	}
 	
 	/**
 	 * Init variables
 	 */
 	private void init0() {
-		initOrClear(mapHeaderNameWithPos);
-		initOrClear(mapHeaderPosWithName);
+		mapHeaderNameWithPos = initOrClear(mapHeaderNameWithPos);
+		mapHeaderPosWithName = initOrClear(mapHeaderPosWithName);
 	}
 	
 	/**
@@ -387,6 +388,9 @@ public class ExcelReaderImpl implements IExcelReader {
 		try {
 			Map<String, Object> colObj = new HashMap<>();
 			BiConsumer<Map<String, Object>, Map.Entry<String, Object>> colEvent = (col, entry) -> {
+				if (entry.getKey() == null && entry.getValue() == null) {
+					return;
+				}
 				col.put(entry.getKey(), entry.getValue());
 			};
 			Predicate<Map<String, Object>> checkColsNullPre = (cols) -> {
