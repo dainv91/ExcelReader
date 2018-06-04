@@ -226,8 +226,7 @@ public class ExcelReaderImpl implements IExcelReader {
 				throw new RuntimeException("Invalid sheet name");
 			}
 		}
-		wb.getSheetAt(index);
-		return null;
+		return wb.getSheetAt(index);
 	}
 	
 	/**
