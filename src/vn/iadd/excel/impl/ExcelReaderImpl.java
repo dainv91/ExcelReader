@@ -221,7 +221,7 @@ public class ExcelReaderImpl implements IExcelReader {
 		}
 		if (!isNumeric) {
 			index = wb.getSheetIndex(sheetIndexOrName);
-			boolean checkNameIsValid = index == -1;
+			boolean checkNameIsValid = index != -1;
 			if (!checkNameIsValid) {
 				throw new RuntimeException("Invalid sheet name");
 			}
