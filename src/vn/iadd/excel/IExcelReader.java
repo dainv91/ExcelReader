@@ -19,6 +19,13 @@ public interface IExcelReader extends AutoCloseable {
 	List<IExcelModel> read(String file);
 	
 	/**
+	 * Read content of all sheet
+	 * @param file String
+	 * @return IExcelResult
+	 */
+	IExcelResult readAllSheet(String file);
+	
+	/**
 	 * Read content of excel asynchronous. Call onDone consumer when finish.
 	 * @param file String
 	 * @param onDone Consumer<List<IExcelModel>>

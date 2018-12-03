@@ -29,6 +29,8 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import vn.iadd.excel.IExcelModel;
 import vn.iadd.excel.IExcelReader;
+import vn.iadd.excel.IExcelResult;
+import vn.iadd.excel.model.MyExcelResult;
 import vn.iadd.util.Logger;
 import vn.iadd.util.ObjectUtil;
 
@@ -176,6 +178,12 @@ public class ExcelReaderImpl implements IExcelReader {
 		return lst;
 	}
 
+	@Override
+	public IExcelResult readAllSheet(String file) {
+		IExcelResult result = MyExcelResult.newInstance(file);
+		return result;
+	}
+	
 	@Override
 	public void readAsync(String file, Consumer<List<IExcelModel>> onDone) {
 		Callable<List<IExcelModel>> task = () -> {
