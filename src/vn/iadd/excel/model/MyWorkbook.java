@@ -5,6 +5,7 @@ package vn.iadd.excel.model;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +24,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 public final class MyWorkbook implements IWorkbook {
 
 	private int rowContainHeader;
-	private String file, password;
+	//private String file, password;
 	
 	private static final Map<String, Integer> mapSheetName = new HashMap<>();
 	private static final Map<String, Sheet> mapSheets = new HashMap<>();
@@ -45,20 +46,44 @@ public final class MyWorkbook implements IWorkbook {
 	
 	public MyWorkbook(String file, String password, int rowContainHeader) {
 		this.rowContainHeader = rowContainHeader;
-		this.file = file;
-		this.password = password;
+		//this.file = file;
+		//this.password = password;
 		try {
-			read0();
+			read0(file, password);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	private void read0() throws EncryptedDocumentException, InvalidFormatException, IOException {
-		if (file == null || file.trim().isEmpty()) {
+	public MyWorkbook(InputStream fileInputStream, String password, int rowContainHeader) {
+		this.rowContainHeader = rowContainHeader;
+		//this.password = password;
+		try {
+			read0(fileInputStream, password);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	private void read0(final String fileName, final String password) throws EncryptedDocumentException, InvalidFormatException, IOException {
+		if (fileName == null || fileName.trim().isEmpty()) {
 			return;
 		}
-		this.wb = WorkbookFactory.create(new File(file), password, true);
+		this.wb = WorkbookFactory.create(new File(fileName), password, true);
+		readWorkbook0();
+	}
+	
+	private void read0(InputStream in, final String password) throws EncryptedDocumentException, InvalidFormatException, IOException {
+		this.wb = WorkbookFactory.create(in, password);
+		//this.wb = WorkbookFactory.create(new File(file), password, true);
+		readWorkbook0();
+	}
+	
+	private void readWorkbook0() {
+		if (wb == null) {
+			return;
+		}
 		int sheetCount = wb.getNumberOfSheets();
 		for (int i=0; i<sheetCount; i++) {
 			final Sheet sheet = wb.getSheetAt(i);
@@ -102,4 +127,18 @@ public final class MyWorkbook implements IWorkbook {
 		return sheet;
 	}
 
+	/* (non-Javadoc)
+	 * @see vn.iadd.excel.model.IWorkbook#toMap()
+	 */
+	@Override
+	public Map<String, List<Map<String, Object>>> toMap() {
+		Map<String, List<Map<String, Object>>> mapData = new HashMap<>();
+		List<IWorksheet> sheets = getSheets();
+		for (IWorksheet sheet: sheets) {
+			final String sName = sheet.getSheetName();
+			final List<Map<String, Object>> rows = sheet.getRows();
+			mapData.put(sName, rows);
+		}
+		return mapData;
+	}
 }
