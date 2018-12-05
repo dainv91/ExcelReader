@@ -52,6 +52,10 @@ public final class MyWorkbook implements IWorkbook {
 			read0(file, password);
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			clearOldData();
+			mapSheetName.clear();
+			mapSheets.clear();
 		}
 	}
 	
@@ -62,9 +66,14 @@ public final class MyWorkbook implements IWorkbook {
 			read0(fileInputStream, password);
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			clearOldData();
 		}
 	}
 	
+	private void clearOldData() {
+		this.wb = null;
+	}
 	
 	private void read0(final String fileName, final String password) throws EncryptedDocumentException, InvalidFormatException, IOException {
 		if (fileName == null || fileName.trim().isEmpty()) {
